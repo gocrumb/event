@@ -14,8 +14,11 @@
 // 		CustomerID int
 // 	}
 //
-// running this command event -type=OrderPlaced in the same directory will
-// create the file event.go, in package ev, containing the definitions of all
+// running this command
+//
+// 	event -type=OrderPlaced
+//
+// in the same directory will create the file event.go, in package ev, containing the definitions of all
 // the relevant symbols.
 //
 // You can then listen for events by doing this:
