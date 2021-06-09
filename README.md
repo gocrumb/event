@@ -48,11 +48,11 @@ OnOrderShipped(func(e OrderShipped) {
 })
 
 // From elsewhere in your application:
-EmitterOrderPlaced.Trigger(OrderPlaced{
+EmitOrderPlaced(OrderPlaced{
 	OrderID:    5,
 	CustomerID: 265,
 })
-EmitterOrderShipped.Trigger(OrderShipped{
+EmitOrderShipped(OrderShipped{
 	OrderID: 5,
 })
 ```

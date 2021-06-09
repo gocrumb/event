@@ -54,6 +54,10 @@ func OnOrderPlaced(f func(OrderPlaced)) {
 	EmitterOrderPlaced.Handle(OrderPlacedHandlerFunc(f))
 }
 
+func EmitOrderPlaced(e OrderPlaced) {
+	EmitterOrderPlaced.Trigger(e)
+}
+
 func (e OrderShipped) Type() EventType {
 	return EventOrderShipped
 }
@@ -92,6 +96,10 @@ func (m *OrderShippedEmitter) HandleFunc(f func(OrderShipped)) {
 
 func OnOrderShipped(f func(OrderShipped)) {
 	EmitterOrderShipped.Handle(OrderShippedHandlerFunc(f))
+}
+
+func EmitOrderShipped(e OrderShipped) {
+	EmitterOrderShipped.Trigger(e)
 }
 
 var (
