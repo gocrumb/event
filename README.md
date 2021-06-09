@@ -1,10 +1,12 @@
 # Event
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/gocrumb/event.svg)](https://pkg.go.dev/github.com/gocrumb/event)
+
 Manage and dispatch events within your Go application. This is somewhat inspired from Laravel's simple approach to the observer pattern.
 
 ## Installation
 
-Install gocrumb/event using the go get command:
+Install event using the go get command:
 
 ```
 $ go get github.com/gocrumb/event
@@ -12,7 +14,7 @@ $ go get github.com/gocrumb/event
 
 The package requires no additional dependencies other than Go itself.
 
-## Example
+## Usage
 
 Run `go generate` with a file like the following:
 
@@ -56,3 +58,15 @@ EmitOrderShipped(OrderShipped{
 	OrderID: 5,
 })
 ```
+
+## Documentation
+
+- [Reference](https://godoc.org/github.com/gocrumb/event)
+
+## Contributing
+
+Contributions are welcome.
+
+## License
+
+This package is available under the [BSD (3-Clause) License](https://opensource.org/licenses/BSD-3-Clause).
