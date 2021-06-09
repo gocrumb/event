@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -12,8 +11,6 @@ import (
 
 func main() {
 	log.SetFlags(0)
-
-	fmt.Println(os.Args)
 
 	types := flag.String("type", "", "")
 	output := flag.String("output", "event.go", "")
