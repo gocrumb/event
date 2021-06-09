@@ -4,10 +4,10 @@ Manage and dispatch events within your Go application. This is somewhat inspired
 
 ## Installation
 
-Install grumbs/event using the go get command:
+Install gocrumb/event using the go get command:
 
 ```
-$ go get github.com/grumbs/event
+$ go get github.com/gocrumb/event
 ```
 
 The package requires no additional dependencies other than Go itself.
