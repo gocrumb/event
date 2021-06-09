@@ -88,6 +88,10 @@ func (g *Generator) generate() ([]byte, error) {
 		fmt.Fprintf(&b, "\tEmitter%s.Handle(%sHandlerFunc(f))\n", t.name, t.name)
 		fmt.Fprintln(&b, "}")
 		fmt.Fprintln(&b)
+		fmt.Fprintf(&b, "func Emit%s(e %s) {\n", t.name, t.name)
+		fmt.Fprintf(&b, "\tEmitter%s.Trigger(e)\n", t.name)
+		fmt.Fprintln(&b, "}")
+		fmt.Fprintln(&b)
 	}
 	fmt.Fprintln(&b, "var (")
 	for _, t := range types {
