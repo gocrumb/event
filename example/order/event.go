@@ -2,6 +2,8 @@
 
 package main
 
+import "context"
+
 type EventType int
 
 const (
@@ -11,34 +13,34 @@ const (
 
 type Event interface {
 	Type() EventType
-	Trigger()
+	Trigger(context.Context)
 }
 
 func (e OrderPlaced) Type() EventType {
 	return EventOrderPlaced
 }
 
-func (e OrderPlaced) Trigger() {
-	EmitterOrderPlaced.Trigger(e)
+func (e OrderPlaced) Trigger(ctx context.Context) {
+	EmitterOrderPlaced.Trigger(ctx, e)
 }
 
 type OrderPlacedHandler interface {
-	Handle(OrderPlaced)
+	Handle(context.Context, OrderPlaced)
 }
 
-type OrderPlacedHandlerFunc func(OrderPlaced)
+type OrderPlacedHandlerFunc func(context.Context, OrderPlaced)
 
-func (f OrderPlacedHandlerFunc) Handle(e OrderPlaced) {
-	f(e)
+func (f OrderPlacedHandlerFunc) Handle(ctx context.Context, e OrderPlaced) {
+	f(ctx, e)
 }
 
 type OrderPlacedEmitter struct {
 	handlers []OrderPlacedHandler
 }
 
-func (m *OrderPlacedEmitter) Trigger(e OrderPlaced) {
+func (m *OrderPlacedEmitter) Trigger(ctx context.Context, e OrderPlaced) {
 	for _, h := range m.handlers {
-		h.Handle(e)
+		h.Handle(ctx, e)
 	}
 }
 
@@ -46,43 +48,43 @@ func (m *OrderPlacedEmitter) Handle(h OrderPlacedHandler) {
 	m.handlers = append(m.handlers, h)
 }
 
-func (m *OrderPlacedEmitter) HandleFunc(f func(OrderPlaced)) {
+func (m *OrderPlacedEmitter) HandleFunc(f func(context.Context, OrderPlaced)) {
 	m.Handle(OrderPlacedHandlerFunc(f))
 }
 
-func OnOrderPlaced(f func(OrderPlaced)) {
+func OnOrderPlaced(f func(context.Context, OrderPlaced)) {
 	EmitterOrderPlaced.Handle(OrderPlacedHandlerFunc(f))
 }
 
-func EmitOrderPlaced(e OrderPlaced) {
-	EmitterOrderPlaced.Trigger(e)
+func EmitOrderPlaced(ctx context.Context, e OrderPlaced) {
+	EmitterOrderPlaced.Trigger(ctx, e)
 }
 
 func (e OrderShipped) Type() EventType {
 	return EventOrderShipped
 }
 
-func (e OrderShipped) Trigger() {
-	EmitterOrderShipped.Trigger(e)
+func (e OrderShipped) Trigger(ctx context.Context) {
+	EmitterOrderShipped.Trigger(ctx, e)
 }
 
 type OrderShippedHandler interface {
-	Handle(OrderShipped)
+	Handle(context.Context, OrderShipped)
 }
 
-type OrderShippedHandlerFunc func(OrderShipped)
+type OrderShippedHandlerFunc func(context.Context, OrderShipped)
 
-func (f OrderShippedHandlerFunc) Handle(e OrderShipped) {
-	f(e)
+func (f OrderShippedHandlerFunc) Handle(ctx context.Context, e OrderShipped) {
+	f(ctx, e)
 }
 
 type OrderShippedEmitter struct {
 	handlers []OrderShippedHandler
 }
 
-func (m *OrderShippedEmitter) Trigger(e OrderShipped) {
+func (m *OrderShippedEmitter) Trigger(ctx context.Context, e OrderShipped) {
 	for _, h := range m.handlers {
-		h.Handle(e)
+		h.Handle(ctx, e)
 	}
 }
 
@@ -90,16 +92,16 @@ func (m *OrderShippedEmitter) Handle(h OrderShippedHandler) {
 	m.handlers = append(m.handlers, h)
 }
 
-func (m *OrderShippedEmitter) HandleFunc(f func(OrderShipped)) {
+func (m *OrderShippedEmitter) HandleFunc(f func(context.Context, OrderShipped)) {
 	m.Handle(OrderShippedHandlerFunc(f))
 }
 
-func OnOrderShipped(f func(OrderShipped)) {
+func OnOrderShipped(f func(context.Context, OrderShipped)) {
 	EmitterOrderShipped.Handle(OrderShippedHandlerFunc(f))
 }
 
-func EmitOrderShipped(e OrderShipped) {
-	EmitterOrderShipped.Trigger(e)
+func EmitOrderShipped(ctx context.Context, e OrderShipped) {
+	EmitterOrderShipped.Trigger(ctx, e)
 }
 
 var (
@@ -107,6 +109,6 @@ var (
 	EmitterOrderShipped = OrderShippedEmitter{}
 )
 
-func Trigger(e Event) {
-	e.Trigger()
+func Trigger(ctx context.Context, e Event) {
+	e.Trigger(ctx)
 }
