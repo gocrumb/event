@@ -1,6 +1,10 @@
 package event
 
-import "context"
+import (
+	"context"
+	"fmt"
+	"log/slog"
+)
 
 type Handler[T any] interface {
 	Handle(ctx context.Context, e T)
@@ -14,6 +18,7 @@ func (f HandlerFunc[T]) Handle(ctx context.Context, e T) {
 
 type Emitter[T any] struct {
 	handlers []Handler[T]
+	logger   *slog.Logger
 }
 
 func (m *Emitter[T]) Handle(h Handler[T]) {
@@ -25,6 +30,13 @@ func (m *Emitter[T]) HandleFunc(f func(ctx context.Context, e T)) {
 }
 
 func (m *Emitter[T]) Trigger(ctx context.Context, e T) {
+	if m.logger != nil && m.logger.Enabled(ctx, slog.LevelDebug) {
+		m.logger.LogAttrs(ctx, slog.LevelDebug, "event triggered",
+			slog.String("module", "gocrumb/event"),
+			slog.String("type", fmt.Sprintf("%T", e)),
+			slog.Any("event", e),
+		)
+	}
 	for _, h := range m.handlers {
 		h.Handle(ctx, e)
 	}
