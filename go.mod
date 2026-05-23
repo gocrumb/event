@@ -1,3 +1,3 @@
 module github.com/gocrumb/event
 
-go 1.14
+go 1.21

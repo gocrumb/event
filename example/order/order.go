@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 	"fmt"
-)
 
-//go:generate event -type=OrderPlaced,OrderShipped
+	"github.com/gocrumb/event"
+)
 
 type OrderPlaced struct {
 	OrderID    int
@@ -16,15 +16,20 @@ type OrderShipped struct {
 	OrderID int
 }
 
+var (
+	OrderPlacedEvent  event.Emitter[OrderPlaced]
+	OrderShippedEvent event.Emitter[OrderShipped]
+)
+
 func main() {
-	OnOrderPlaced(func(ctx context.Context, e OrderPlaced) {
+	OrderPlacedEvent.HandleFunc(func(ctx context.Context, e OrderPlaced) {
 		fmt.Println("New Order")
 		fmt.Println("Order ID:   ", e.OrderID)
 		fmt.Println("Customer ID:", e.CustomerID)
 		fmt.Println()
 	})
 
-	OnOrderShipped(func(ctx context.Context, e OrderShipped) {
+	OrderShippedEvent.HandleFunc(func(ctx context.Context, e OrderShipped) {
 		fmt.Println("Order Shipped")
 		fmt.Println("Order ID:", e.OrderID)
 		fmt.Println()
@@ -33,11 +38,11 @@ func main() {
 	ctx := context.Background()
 
 	// From elsewhere in your application:
-	EmitOrderPlaced(ctx, OrderPlaced{
+	OrderPlacedEvent.Trigger(ctx, OrderPlaced{
 		OrderID:    5,
 		CustomerID: 265,
 	})
-	EmitOrderShipped(ctx, OrderShipped{
+	OrderShippedEvent.Trigger(ctx, OrderShipped{
 		OrderID: 5,
 	})
 }

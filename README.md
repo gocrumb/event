@@ -2,66 +2,62 @@
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/gocrumb/event.svg)](https://pkg.go.dev/github.com/gocrumb/event)
 
-Manage and dispatch events within your Go application. This is somewhat inspired from Laravel's simple approach to the observer pattern.
+A small, generic, in-process event emitter for Go. Inspired by Laravel's simple take on the observer pattern.
 
 ## Installation
-
-Install event using the go get command:
 
 ```
 $ go get github.com/gocrumb/event
 ```
 
-The package requires no additional dependencies other than Go itself.
+Requires Go 1.21+.
 
 ## Usage
 
-Run `go generate` with a file like the following:
+Declare an event type and a typed emitter for it:
 
 ``` golang
 package main
 
-//go:generate event -type=OrderPlaced,OrderShipped
+import (
+	"context"
+	"fmt"
+
+	"github.com/gocrumb/event"
+)
 
 type OrderPlaced struct {
 	OrderID    int
 	CustomerID int
 }
 
-type OrderShipped struct {
-	OrderID int
-}
+var OrderPlacedEvent event.Emitter[OrderPlaced]
 ```
 
-Use events from everywhere within your applications:
+Register handlers:
 
 ``` golang
-OnOrderPlaced(func(ctx context.Context, e OrderPlaced) {
+OrderPlacedEvent.HandleFunc(func(ctx context.Context, e OrderPlaced) {
 	fmt.Println("New Order")
 	fmt.Println("Order ID:   ", e.OrderID)
 	fmt.Println("Customer ID:", e.CustomerID)
-	fmt.Println()
-})
-
-OnOrderShipped(func(ctx context.Context, e OrderShipped) {
-	fmt.Println("Order Shipped")
-	fmt.Println("Order ID:", e.OrderID)
-	fmt.Println()
-})
-
-// From elsewhere in your application:
-EmitOrderPlaced(ctx, OrderPlaced{
-	OrderID:    5,
-	CustomerID: 265,
-})
-EmitOrderShipped(ctx, OrderShipped{
-	OrderID: 5,
 })
 ```
 
+Trigger the event from elsewhere in your application:
+
+``` golang
+OrderPlacedEvent.Trigger(ctx, OrderPlaced{
+	OrderID:    5,
+	CustomerID: 265,
+})
+```
+
+The zero value of `Emitter` is ready to use. Handlers run synchronously, in registration order, on the goroutine that calls `Trigger`.
+
 ## Documentation
 
-- [Reference](https://godoc.org/github.com/gocrumb/event)
+- [Reference](https://pkg.go.dev/github.com/gocrumb/event)
 
 ## Contributing
 
