@@ -53,6 +53,18 @@ OrderPlacedEvent.Trigger(ctx, OrderPlaced{
 })
 ```
 
+To log each triggered event at debug level, set a default logger for all emitters:
+
+``` golang
+event.SetDefaultLogger(logger)
+```
+
+or create an emitter with its own logger using `New`:
+
+``` golang
+var OrderPlacedEvent = event.New[OrderPlaced](event.Logger(logger))
+```
+
 The zero value of `Emitter` is ready to use. Handlers run synchronously, in registration order, on the goroutine that calls `Trigger`.
 
 ## Documentation

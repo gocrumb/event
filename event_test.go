@@ -89,7 +89,7 @@ func TestTriggerOnZeroValueEmitterIsNoop(t *testing.T) {
 
 func TestTriggerLogsDebugRecord(t *testing.T) {
 	h := &captureHandler{enabled: true}
-	em := Emitter[orderPlaced]{logger: slog.New(h)}
+	em := New[orderPlaced](Logger(slog.New(h)))
 	em.Trigger(context.Background(), orderPlaced{OrderID: 7})
 
 	if len(h.records) != 1 {
@@ -130,7 +130,7 @@ func TestTriggerSkipsLoggingWhenDebugDisabled(t *testing.T) {
 
 func TestTriggerStillInvokesHandlersWhenLogging(t *testing.T) {
 	h := &captureHandler{enabled: true}
-	em := Emitter[orderPlaced]{logger: slog.New(h)}
+	em := New[orderPlaced](Logger(slog.New(h)))
 	called := false
 	em.HandleFunc(func(ctx context.Context, e orderPlaced) {
 		called = true
@@ -151,5 +151,23 @@ func TestTriggerDoesNotTouchDefaultLoggerWhenNil(t *testing.T) {
 	em.Trigger(context.Background(), orderPlaced{})
 	if len(h.records) != 0 {
 		t.Errorf("records = %d, want 0 (nil Logger must not fall back to slog.Default)", len(h.records))
+	}
+}
+
+func TestTriggerUsesDefaultLogger(t *testing.T) {
+	h := &captureHandler{enabled: true}
+	SetDefaultLogger(slog.New(h))
+	t.Cleanup(func() { SetDefaultLogger(nil) })
+
+	var em Emitter[orderPlaced]
+	em.Trigger(context.Background(), orderPlaced{})
+	if len(h.records) != 1 {
+		t.Fatalf("records = %d, want 1", len(h.records))
+	}
+
+	own := &captureHandler{enabled: true}
+	New[orderPlaced](Logger(slog.New(own))).Trigger(context.Background(), orderPlaced{})
+	if len(own.records) != 1 || len(h.records) != 1 {
+		t.Errorf("own records = %d, default records = %d; want 1, 1", len(own.records), len(h.records))
 	}
 }
